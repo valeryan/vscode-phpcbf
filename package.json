@@ -19,10 +19,67 @@
     "contributes": {
         "commands": [
             {
-                "command": "extension.sayHello",
-                "title": "Hello World"
+                "command": "phpcbf.fix",
+                "title": "PHPCBF: Fix this file",
+                "when": "!inOutput && editorFocus && editorLangId == php"
             }
-        ]
+        ],
+        "configuration": {
+            "title": "PHPCBF Configuration options",
+            "type": "object",
+            "properties": {
+                "phpcbf.enable": {
+                    "scope": "resource",
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Control whether phpcbf is enabled for PHP files or not."
+                },
+                "phpcbf.executablePath": {
+                    "scope": "resource",
+                    "type": "string",
+                    "default": null,
+                    "description": "Optional. The default path to the phpcbf executable. Can be overridden if auto search is enabled."
+                },
+                "phpcbf.composerJsonPath": {
+                    "scope": "resource",
+                    "type": "string",
+                    "default": "composer.json",
+                    "description": "The path to composer.json"
+                },
+                "phpcbf.standard": {
+                    "scope": "resource",
+                    "type": [
+                        "string",
+                        "null"
+                    ],
+                    "default": null,
+                    "description": "Optional. The default config to use or global standard. Can be overridden if auto search is enabled."
+                },
+                "phpcbf.autoSearch": {
+                    "scope": "resource",
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Automatically search for a ruleset file to use as configuration. Overrides custom standards and executable path defined above."
+                },
+                "phpcbf.allowedAutoRulesets": {
+                    "scope": "resource",
+                    "type": "array",
+                    "default": [
+                        ".phpcs.xml",
+                        "phpcs.xml",
+                        "phpcs.dist.xml",
+                        "ruleset.xml"
+                    ],
+                    "description": "Filenames to search for that contain rulesets for fixers."
+                },
+                "phpcbf.debug": {
+                    "scope": "resource",
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Write phpcbf stdout to the console"
+                }
+            }
+        }
     },
     "scripts": {
         "vscode:prepublish": "npm run compile",
@@ -32,10 +89,13 @@
         "test": "npm run compile && node ./node_modules/vscode/bin/test"
     },
     "devDependencies": {
+        "@types/cross-spawn": "^6.0.0",
+        "@types/mocha": "^2.2.42",
+        "@types/node": "^7.0.43",
+        "cross-spawn": "^6.0.5",
+        "tslint": "^5.8.0",
         "typescript": "^2.6.1",
         "vscode": "^1.1.6",
-        "tslint": "^5.8.0",
-        "@types/node": "^7.0.43",
-        "@types/mocha": "^2.2.42"
+        "vscode-uri": "^1.0.5"
     }
 }

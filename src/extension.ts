@@ -1,27 +1,45 @@
 'use strict';
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
-import * as vscode from 'vscode';
+
+import { commands, ExtensionContext, workspace, languages } from 'vscode';
+import { Phpcbf } from './phpcbf';
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
-export function activate(context: vscode.ExtensionContext) {
+export async function activate(context: ExtensionContext) {
+    let phpcbf = new Phpcbf();
 
-    // Use the console to output diagnostic information (console.log) and errors (console.error)
-    // This line of code will only be executed once when your extension is activated
-    console.log('Congratulations, your extension "vscode-phpcbf" is now active!');
+    let config = await phpcbf.loadSettings();
 
-    // The command has been defined in the package.json file
-    // Now provide the implementation of the command with  registerCommand
-    // The commandId parameter must match the command field in package.json
-    let disposable = vscode.commands.registerCommand('extension.sayHello', () => {
-        // The code you place here will be executed every time your command is executed
+    if (config.enable === false) {
+        // just exit
+        return;
+    }
 
-        // Display a message box to the user
-        vscode.window.showInformationMessage('Hello World!');
-    });
+    context.subscriptions.push(
+        workspace.onDidChangeConfiguration(() => {
+            phpcbf.loadSettings();
+        })
+    );
 
-    context.subscriptions.push(disposable);
+    // register format from command pallet
+    context.subscriptions.push(
+        commands.registerTextEditorCommand("phpcbf.fix", textEditor => {
+            if (textEditor.document.languageId === "php") {
+                commands.executeCommand("editor.action.formatDocument");
+            }
+        })
+    );
+
+    // register as document formatter for php
+    context.subscriptions.push(
+        languages.registerDocumentFormattingEditProvider({ scheme: 'file', language: 'php' }, {
+            provideDocumentFormattingEdits: (document) => {
+                return new Promise((resolve, reject) => {
+                    phpcbf.format(document);
+                });
+            }
+        })
+    );
 }
 
 // this method is called when your extension is deactivated
