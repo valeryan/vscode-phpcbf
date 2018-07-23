@@ -1,10 +1,12 @@
 'use strict';
 
-import { commands, ExtensionContext, workspace, languages } from 'vscode';
 import { Phpcbf } from './phpcbf';
+import { commands, ExtensionContext, workspace, languages } from 'vscode';
 
-// this method is called when your extension is activated
-// your extension is activated the very first time the command is executed
+/**
+ * Activate Extension
+ * @param context 
+ */
 export async function activate(context: ExtensionContext) {
     let phpcbf = new Phpcbf();
 
@@ -16,8 +18,8 @@ export async function activate(context: ExtensionContext) {
     }
 
     context.subscriptions.push(
-        workspace.onDidChangeConfiguration(() => {
-            phpcbf.loadSettings();
+        workspace.onDidChangeConfiguration(async () => {
+            await phpcbf.loadSettings();
         })
     );
 
@@ -34,14 +36,8 @@ export async function activate(context: ExtensionContext) {
     context.subscriptions.push(
         languages.registerDocumentFormattingEditProvider({ scheme: 'file', language: 'php' }, {
             provideDocumentFormattingEdits: (document) => {
-                return new Promise((resolve, reject) => {
-                    phpcbf.format(document);
-                });
+                return phpcbf.registerDocumentProvider(document);
             }
         })
     );
-}
-
-// this method is called when your extension is deactivated
-export function deactivate() {
 }

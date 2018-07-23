@@ -9,4 +9,5 @@ export interface PhpcbfSettings {
     autoSearch: boolean;
     allowedAutoRulesets: string[];
     debug: boolean;
+    timeout: number;
 }
