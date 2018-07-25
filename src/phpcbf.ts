@@ -36,10 +36,23 @@ export class Phpcbf {
     }
 
     /**
+     * Get the relevant standard.
+     * @param document 
+     */
+    private async resolveStandard(document: TextDocument) {
+        let standardsPathResolver = new StandardsPathResolver(document, this.config);
+        return await standardsPathResolver.resolve();
+    }
+
+    /**
      * run the phpcbf process
      * @param document 
      */
     private async format(document: TextDocument) {
+        if (this.config.debug) {
+            console.time("phpcbf");
+        }
+
         let originalText = document.getText();
 
         let fileName =
@@ -53,8 +66,13 @@ export class Phpcbf {
 
         fs.writeFileSync(fileName, originalText);
 
-        let standardsPathResolver = new StandardsPathResolver(document, this.config);
-        this.config.standard = await standardsPathResolver.resolve();
+        const standard = await this.resolveStandard(document);
+
+        if (standard === '') {
+            return Promise.reject('No valid configuration was found for phpcbf to apply. Please check the standard and autoSearch settings.');
+        }
+
+        const lintArgs = this.getArgs(fileName, standard);
 
         const options = {
             cwd: this.config.workspaceRoot !== null ? this.config.workspaceRoot : undefined,
@@ -64,11 +82,28 @@ export class Phpcbf {
             tty: true
         };
 
-        const lintArgs = this.getArgs(fileName, this.config.standard);
+        if (this.config.debug) {
+            console.log("----- PHPCBF -----");
+            console.log("PHPCBF args: " + this.config.executablePath + " " + lintArgs.join(" "));
+        }
 
         const phpcbf = spawn.sync(this.config.executablePath, lintArgs, options);
         const stdout = phpcbf.stdout.toString().trim();
         const stderr = phpcbf.stderr.toString().trim();
+
+        let fixed = fs.readFileSync(fileName, "utf-8");
+        fs.unlink(fileName, () => { });
+
+
+        let phpcbfError = false;
+        let errors: { [key: number]: string } = {
+            3: "PHPCBF: A general script execution error occurred.",
+            16: "PHPCBF: Configuration error of the application.",
+            32: "PHPCBF: Configuration error of a Fixer.",
+            64: "PHPCBF: Exception raised within the application.",
+            255: "PHPCBF: A Fatal execution error occurred."
+        };
+        let result: string;
 
         /**
         * phpcbf exit codes:
@@ -77,44 +112,49 @@ export class Phpcbf {
         * Exit code 2 is used to indicate that PHPCBF failed to fix some of the fixable errors it found
         * Exit code 3 is used for general script execution errors
         */
-
-        let phpcbfError = false;
-        let errors: { [key: number]: string } = {
-            3: "PHPCBF: General script execution errors.",
-            16: "PHPCBF: Configuration error of the application.",
-            32: "PHPCBF: Configuration error of a Fixer.",
-            64: "PHPCBF: Exception raised within the application."
-        };
-
-        let fixed = fs.readFileSync(fileName, "utf-8");
-        fs.unlink(fileName, () => { });
-
         switch (phpcbf.status) {
             case null: {
+                phpcbfError = true;
+                result = 'A General Execution error occurred.';
                 const execError: ConsoleError = phpcbf.error;
+
                 if (execError.code === 'ETIMEDOUT') {
-                    window.showErrorMessage('Formating the document is taking longer than the configured formatOnSaveTimeout. Consider setting to at least 2 seconds (2000).');
+                    result = 'PHPCBF: Formating the document is taking longer than the configured formatOnSaveTimeout. Consider setting to at least 2 seconds (2000).';
+                }
+
+                if (execError.code === 'ENOENT') {
+                    result = 'PHPCBF: ' + execError.message + '. executablePath not found.';
                 }
             }
             case 0: {
                 window.showInformationMessage(stdout);
-                break;
+                result = '';
             }
             case 1:
             case 2: {
                 if (fixed.length > 0 && fixed !== originalText) {
-                    return fixed;
+                    result = fixed;
                 }
-                break;
             }
-            case 3:
-                phpcbfError = true;
             default:
-                let error: string = phpcbfError ? stdout : errors[phpcbf.status];
-                throw new Error(error);
+                phpcbfError = true;
+                result = errors[phpcbf.status];
         }
 
-        return '';
+        if (this.config.debug) {
+            if (stderr !== '') {
+                console.log(stderr);
+            } else {
+                console.log(stdout);
+            }
+            console.timeEnd("phpcbf");
+            console.log("----- END PHPCBF -----");
+        }
+
+        if (phpcbfError) {
+            return Promise.reject(result);
+        }
+        return result;
     }
 
     /**
@@ -132,7 +172,6 @@ export class Phpcbf {
             this.format(document)
                 .then(text => {
                     if (text.length > 0) {
-                        console.log('success');
                         resolve([new TextEdit(range, text)]);
                     }
                     reject();

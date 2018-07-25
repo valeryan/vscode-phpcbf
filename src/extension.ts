@@ -19,7 +19,7 @@ export async function activate(context: ExtensionContext) {
 
     context.subscriptions.push(
         workspace.onDidChangeConfiguration(async () => {
-            await phpcbf.loadSettings();
+            config = await phpcbf.loadSettings();
         })
     );
 

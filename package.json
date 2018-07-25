@@ -2,7 +2,7 @@
     "name": "vscode-phpcbf",
     "displayName": "phpcbf",
     "description": "Extension that formats a php file using phpcbf.",
-    "version": "0.0.1",
+    "version": "1.0.0",
     "publisher": "ValeryanM",
     "engines": {
         "vscode": "^1.25.0"

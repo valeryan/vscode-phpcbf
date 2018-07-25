@@ -13,6 +13,13 @@ export class StandardsPathResolver extends PhpcbfPathResolverBase {
 
     }
     async resolve(): Promise<string> {
+        if (this.config.autoSearch === false) {
+            if (this.config.standard !== null && fs.existsSync(this.config.standard)) {
+                return this.config.standard;
+            }
+            return '';
+        }
+
         let resolvedPath: string | null = null;
         let workspaceRoot = this.config.workspaceRoot + '/';
         let localPath = this.document.uri.fsPath.replace(workspaceRoot, '');
