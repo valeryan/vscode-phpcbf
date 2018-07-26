@@ -103,7 +103,7 @@ export class Phpcbf {
             64: "PHPCBF: Exception raised within the application.",
             255: "PHPCBF: A Fatal execution error occurred."
         };
-        let result: string;
+        let result: string = '';
 
         /**
         * phpcbf exit codes:
@@ -125,16 +125,19 @@ export class Phpcbf {
                 if (execError.code === 'ENOENT') {
                     result = 'PHPCBF: ' + execError.message + '. executablePath not found.';
                 }
+                break;
             }
             case 0: {
                 window.showInformationMessage(stdout);
                 result = '';
+                break;
             }
             case 1:
             case 2: {
                 if (fixed.length > 0 && fixed !== originalText) {
                     result = fixed;
                 }
+                break;
             }
             default:
                 phpcbfError = true;
@@ -154,6 +157,7 @@ export class Phpcbf {
         if (phpcbfError) {
             return Promise.reject(result);
         }
+
         return result;
     }
 
