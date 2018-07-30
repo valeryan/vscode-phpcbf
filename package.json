@@ -32,7 +32,7 @@
                     "scope": "resource",
                     "type": "boolean",
                     "default": true,
-                    "description": "Control whether phpcbf is enabled for PHP files or not."
+                    "description": "Control if phpcbf is enabled for PHP files or not."
                 },
                 "phpcbf.executablePath": {
                     "scope": "resource",
