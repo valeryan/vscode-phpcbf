@@ -211,12 +211,12 @@ Execute the phpcbf command in your terminal with --report=json and see whether t
 
 ## Acknowledgements
 
-This extension is based off of the `phpcs` extension created by [Ioannis Kappas](https://github.com/ikappas/vscode-phpcs/) and the existing `phpcbf` extension by [Per Søderlind](https://github.com/soderlind/vscode-phpcbf/). It uses some portions of both extensions to provide the `phpcbf` functionality.
+This extension is based off of the `phpcs` extension created by [Ioannis Kappas](https://github.com/ikappas/vscode-phpcs/) and the existing `phpcbf` extension by [Per Søderlind](https://github.com/soderlind/vscode-phpcbf/). It uses some portions of both extensions to provide the `phpcbf` functionality with auto config search.
 
 ## Contributing and Licensing
 
 The project is hosted on [GitHub](https://github.com/valeryan/vscode-phpcbf) where you can [report issues](https://github.com/valeryan/vscode-phpcbf/issues), fork
-the project and submit pull requests.
+the project and submit pull requests. See the [development guide](https://github.com/valeryan/vscode-phpcbf/blob/master/DEVELOPMENT.md) for details.
 
 The project is available under [MIT license](https://github.com/valeryan/vscode-phpcbf/blob/master/LICENSE.md), which allows modification and
 redistribution for both commercial and non-commercial purposes.

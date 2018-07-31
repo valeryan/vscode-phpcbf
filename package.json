@@ -3,11 +3,16 @@
     "displayName": "phpcbf",
     "description": "Extension that formats a php file using phpcbf.",
     "version": "1.0.0",
+    "icon": "php_logo.png",
     "publisher": "ValeryanM",
+    "homepage": "https://github.com/valeryan/vscode-phpcbf",
     "license": "MIT",
     "repository": {
         "type": "git",
         "url": "https://github.com/valeryan/vscode-phpcbf.git"
+    },
+    "bugs": {
+        "url": "https://github.com/valeryan/vscode-phpcbf/issues"
     },
     "engines": {
         "vscode": "^1.25.0"
