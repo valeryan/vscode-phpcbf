@@ -61,6 +61,7 @@ export class Phpcbf {
             console.time("phpcbf");
         }
 
+        // grab original text and create a temp file
         let originalText = document.getText();
 
         let fileName =
@@ -74,6 +75,7 @@ export class Phpcbf {
 
         fs.writeFileSync(fileName, originalText);
 
+        // setup and spawn phpcbf process
         const standard = await this.resolveStandard(document);
 
         const lintArgs = this.getArgs(fileName, standard);
@@ -95,11 +97,10 @@ export class Phpcbf {
         const stdout = phpcbf.stdout.toString().trim();
         const stderr = phpcbf.stderr.toString().trim();
 
+        // grab the fixed file and cleanup
         let fixed = fs.readFileSync(fileName, "utf-8");
         fs.unlink(fileName, () => { });
 
-
-        let phpcbfError = false;
         let errors: { [key: number]: string } = {
             3: "PHPCBF: A general script execution error occurred.",
             16: "PHPCBF: Configuration error of the application.",
@@ -107,6 +108,8 @@ export class Phpcbf {
             64: "PHPCBF: Exception raised within the application.",
             255: "PHPCBF: A Fatal execution error occurred."
         };
+
+        let error: string = '';
         let result: string = '';
 
         /**
@@ -118,21 +121,23 @@ export class Phpcbf {
         */
         switch (phpcbf.status) {
             case null: {
-                phpcbfError = true;
-                result = 'A General Execution error occurred.';
+                // deal with some special case errors
+                error = 'A General Execution error occurred.';
                 const execError: ConsoleError = phpcbf.error;
 
                 if (execError.code === 'ETIMEDOUT') {
-                    result = 'PHPCBF: Formating the document is taking longer than the configured formatOnSaveTimeout. Consider setting to at least 2 seconds (2000).';
+                    error = 'PHPCBF: Formating the document is taking longer than the configured formatOnSaveTimeout. Consider setting to at least 2 seconds (2000).';
                 }
 
                 if (execError.code === 'ENOENT') {
-                    result = 'PHPCBF: ' + execError.message + '. executablePath not found.';
+                    error = 'PHPCBF: ' + execError.message + '. executablePath not found.';
                 }
                 break;
             }
             case 0: {
-                window.showInformationMessage(stdout);
+                if (this.config.debug) {
+                    window.showInformationMessage(stdout);
+                }
                 result = '';
                 break;
             }
@@ -144,8 +149,7 @@ export class Phpcbf {
                 break;
             }
             default:
-                phpcbfError = true;
-                result = errors[phpcbf.status];
+                error = errors[phpcbf.status];
         }
 
         if (this.config.debug) {
@@ -158,8 +162,8 @@ export class Phpcbf {
             console.log("----- END PHPCBF -----");
         }
 
-        if (phpcbfError) {
-            return Promise.reject(result);
+        if (error !== '') {
+            return Promise.reject(error);
         }
 
         return result;
@@ -182,7 +186,7 @@ export class Phpcbf {
                     if (text.length > 0) {
                         resolve([new TextEdit(range, text)]);
                     }
-                    reject();
+                    resolve();
                 })
                 .catch(err => {
                     window.showErrorMessage(err);

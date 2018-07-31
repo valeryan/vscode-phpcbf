@@ -98,14 +98,16 @@
         "postinstall": "node ./node_modules/vscode/bin/install",
         "test": "npm run compile && node ./node_modules/vscode/bin/test"
     },
+    "dependencies": {
+        "cross-spawn": "^6.0.5",
+        "vscode": "^1.1.6",
+        "vscode-uri": "^1.0.5"
+    },
     "devDependencies": {
         "@types/cross-spawn": "^6.0.0",
         "@types/mocha": "^2.2.42",
         "@types/node": "^7.0.43",
-        "cross-spawn": "^6.0.5",
         "tslint": "^5.8.0",
-        "typescript": "^2.6.1",
-        "vscode": "^1.1.6",
-        "vscode-uri": "^1.0.5"
+        "typescript": "^2.6.1"
     }
 }
