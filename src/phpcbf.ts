@@ -17,9 +17,15 @@ export class Phpcbf {
      */
     public async loadSettings() {
         let configuration = new PhpcbfConfiguration();
-        this.config = await configuration.load();
+        let config = await configuration.load();
 
-        return this.config;
+        if (config === null) {
+            throw new Error('Unable to validate configuration.');
+        }
+
+        this.config = config;
+
+        return config;
     }
 
     /**
@@ -31,7 +37,9 @@ export class Phpcbf {
         let args = [];
         args.push("-lq");
         args.push(fileName);
-        args.push("--standard=" + standard);
+        if (standard !== '') {
+            args.push("--standard=" + standard);
+        }
         return args;
     }
 
@@ -67,10 +75,6 @@ export class Phpcbf {
         fs.writeFileSync(fileName, originalText);
 
         const standard = await this.resolveStandard(document);
-
-        if (standard === '') {
-            return Promise.reject('No valid configuration was found for phpcbf to apply. Please check the standard and autoSearch settings.');
-        }
 
         const lintArgs = this.getArgs(fileName, standard);
 

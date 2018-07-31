@@ -3,7 +3,7 @@
 import * as path from "path";
 import { PhpcbfSettings } from "./settings";
 import { PhpcbfPathResolver } from "./resolvers/path-resolver";
-import { workspace, window, WorkspaceFolder, WorkspaceConfiguration } from "vscode";
+import { workspace, window, WorkspaceConfiguration, Uri } from "vscode";
 
 export class PhpcbfConfiguration {
     /**
@@ -11,29 +11,26 @@ export class PhpcbfConfiguration {
      */
     public async load() {
         const editor = window.activeTextEditor;
-
         let config: WorkspaceConfiguration;
-        let folder: WorkspaceFolder | undefined;
         let timeout: number | undefined;
+        let rootPath: string;
 
         if (!editor || !workspace.workspaceFolders) {
-            config = workspace.getConfiguration('phpcbf');
+            return null;
         } else {
             const resource = editor.document.uri;
             config = workspace.getConfiguration('phpcbf', resource);
-            folder = workspace.getWorkspaceFolder(resource);
             timeout = workspace.getConfiguration('editor', resource).get('formatOnSaveTimeout');
+            rootPath = this.resolveRootPath(workspace, resource);
         }
-
-
         // update settings from config
         let settings: PhpcbfSettings = {
             enable: config.get('enable', true),
-            workspaceRoot: folder ? folder.uri.fsPath : '',
+            workspaceRoot: rootPath,
             executablePath: config.get('executablePath', ''),
             composerJsonPath: config.get('composerJsonPath', 'composer.json'),
             standard: config.get('standard', ''),
-            autoSearch: config.get('autoSearch', true),
+            autoConfigSearch: config.get('autoConfigSearch', true),
             allowedAutoRulesets: config.get('allowedAutoRulesets', [
                 ".phpcs.xml",
                 "phpcs.xml",
@@ -45,6 +42,12 @@ export class PhpcbfConfiguration {
         };
 
         settings = await this.resolveExecutablePath(settings);
+
+        if (settings.debug) {
+            console.log("----- PHPCBF CONFIGURATION-----");
+            console.log(settings);
+            console.log("----- END PHPCBF CONFIGURATION-----");
+        }
 
         return settings;
     }
@@ -60,5 +63,22 @@ export class PhpcbfConfiguration {
             settings.executablePath = path.join(settings.workspaceRoot, settings.executablePath);
         }
         return settings;
+    }
+
+    /**
+     * Attempt to find the root path for a workspace or resource
+     * @param workspace 
+     * @param resource 
+     */
+    private resolveRootPath(workspace: any, resource: Uri) {
+        // try to get a valid folder from resource
+        let folder = workspace.getWorkspaceFolder(resource);
+        // try to get a folder from workspace
+        if (!folder) {
+            folder = workspace.workspaceFolders.shift();
+        }
+
+        // one last safety check
+        return folder ? folder.uri.fsPath : '';
     }
 }

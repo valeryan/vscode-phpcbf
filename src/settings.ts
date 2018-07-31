@@ -6,7 +6,7 @@ export interface PhpcbfSettings {
     executablePath: string;
     composerJsonPath: string;
     standard: string | null;
-    autoSearch: boolean;
+    autoConfigSearch: boolean;
     allowedAutoRulesets: string[];
     debug: boolean;
     timeout: number;

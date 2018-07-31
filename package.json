@@ -4,6 +4,11 @@
     "description": "Extension that formats a php file using phpcbf.",
     "version": "1.0.0",
     "publisher": "ValeryanM",
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/valeryan/vscode-phpcbf.git"
+    },
     "engines": {
         "vscode": "^1.25.0"
     },
@@ -55,11 +60,11 @@
                     "default": null,
                     "description": "Optional. The default config to use or global standard. Can be overridden if auto search is enabled."
                 },
-                "phpcbf.autoSearch": {
+                "phpcbf.autoConfigSearch": {
                     "scope": "resource",
                     "type": "boolean",
                     "default": true,
-                    "description": "Automatically search for a ruleset file to use as configuration. Overrides custom standards and executable path defined above."
+                    "description": "Automatically search for a ruleset file to use as configuration. Overrides custom standards defined above."
                 },
                 "phpcbf.allowedAutoRulesets": {
                     "scope": "resource",
