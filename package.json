@@ -1,9 +1,9 @@
 {
     "name": "vscode-phpcbf",
     "displayName": "phpcbf",
-    "description": "Extension that formats a php file using phpcbf.",
-    "version": "1.0.0",
-    "icon": "php_logo.png",
+    "description": "PHP Code Beautifier & Fixer for Visual StudioCode",
+    "version": "1.0.1",
+    "icon": "phpcbf.png",
     "publisher": "ValeryanM",
     "homepage": "https://github.com/valeryan/vscode-phpcbf",
     "license": "MIT",
