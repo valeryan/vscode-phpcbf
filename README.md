@@ -1,6 +1,6 @@
 # vscode-phpcbf
 
-This linter plugin for [Visual Studio Code](https://code.visualstudio.com/) provides an interface to [phpcbf](http://pear.php.net/package/PHP_CodeSniffer/). It will be used with files that have the “PHP” language mode. This extension is designed to compliment the phpcs extension and uses the same auto configuration search mechanism to apply rulesets to files within a workspace.
+This linter plugin for [Visual Studio Code](https://code.visualstudio.com/) provides an interface to [phpcbf](http://pear.php.net/package/PHP_CodeSniffer/). It will be used with files that have the “PHP” language mode. This extension is designed to compliment the [phpcs](https://github.com/ikappas/vscode-phpcs/) extension and uses the same auto configuration search mechanism to apply rulesets to files within a workspace.
 
 ## Installation
 
@@ -168,7 +168,7 @@ The following values are applicable:
 
 [ *Scope:* All | Optional | *Type:* boolean | *Default:* true ]
 
-Automatically search for any `phpcbf.xml`, `phpcbf.xml.dist`, `phpcbf.ruleset.xml` or `ruleset.xml` file to use as configuration. Overrides `phpcbf.standard` configuration when a ruleset is found. If `phpcs` finds a configuration file through auto search this extension should similarly find that configuration file and apply fixes based on the same configuration.
+Automatically search for any `.phpcs.xml`, `.phpcs.xml.dist`, `phpcs.xml`, `phpcs.xml.dist`, `phpcs.ruleset.xml` or `ruleset.xml` file to use as configuration. Overrides `phpcbf.standard` configuration when a ruleset is found. If `phpcs` finds a configuration file through auto search this extension should similarly find that configuration file and apply fixes based on the same configuration.
 
 > **NOTE:** This option does not apply for unsaved documents (in-memory). Also, the name of files that are searched for is configurable in this extension.
 
