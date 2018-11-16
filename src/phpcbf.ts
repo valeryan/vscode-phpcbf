@@ -49,7 +49,10 @@ export class Phpcbf {
      */
     private async resolveStandard(document: TextDocument) {
         let standardsPathResolver = new StandardsPathResolver(document, this.config);
-        return await standardsPathResolver.resolve();
+        const configured = this.config.standard !== null ? this.config.standard : '';
+        const resolved = await standardsPathResolver.resolve();
+        // just return the value of config.standard if nothings was resolved.
+        return resolved === '' ?  configured : resolved; 
     }
 
     /**
