@@ -14,9 +14,6 @@ export class StandardsPathResolver extends PhpcbfPathResolverBase {
     }
     async resolve(): Promise<string> {
         if (this.config.autoConfigSearch === false) {
-            if (this.config.standard !== null) {
-                return this.config.standard;
-            }
             return '';
         }
 
