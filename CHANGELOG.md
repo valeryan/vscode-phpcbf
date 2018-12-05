@@ -1,4 +1,6 @@
 # Change Log
+## 1.1.1
+- Fix a windows path resolution issue when using autoconfig search.
 ## 1.1.0
 - Fix resolution of configured standard
 ## 1.0.2

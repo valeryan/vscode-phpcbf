@@ -10,7 +10,6 @@ export class StandardsPathResolver extends PhpcbfPathResolverBase {
 
     constructor(private document: TextDocument, private config: PhpcbfSettings) {
         super();
-
     }
     async resolve(): Promise<string> {
         if (this.config.autoConfigSearch === false) {
@@ -18,16 +17,16 @@ export class StandardsPathResolver extends PhpcbfPathResolverBase {
         }
 
         let resolvedPath: string | null = null;
-        let workspaceRoot = this.config.workspaceRoot + '/';
+        let workspaceRoot = this.config.workspaceRoot + this.pathSeperator;
         let localPath = this.document.uri.fsPath.replace(workspaceRoot, '');
-        let paths = localPath.split('/')
+        let paths = localPath.split(this.pathSeperator)
             .filter(path => path.includes('.php') !== true);
 
         let searchPaths = [];
 
         // create search paths based on file location
         for (let i = 0, len = paths.length; i < len; i++) {
-            searchPaths.push(workspaceRoot + paths.join('/') + '/');
+            searchPaths.push(workspaceRoot + paths.join(this.pathSeperator) + this.pathSeperator);
             paths.pop();
         }
         searchPaths.push(workspaceRoot);
@@ -42,6 +41,12 @@ export class StandardsPathResolver extends PhpcbfPathResolverBase {
                 files.push(path + file);
             });
         });
+
+        if (this.config.debug) {
+            console.log("----- PHPCBF SEARCHPATHS-----");
+            console.log(searchPaths);
+            console.log("----- END PHPCBF SEARCHPATHS-----");
+        }
 
         for (let i = 0, len = files.length; i < len; i++) {
             let c = files[i];
