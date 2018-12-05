@@ -6,9 +6,11 @@
 
 export abstract class PhpcbfPathResolverBase {
 	protected phpcbfExecutableFile: string;
+	protected pathSeperator: string;
 
 	constructor() {
 		let extension = /^win/.test(process.platform) ? ".bat" : "";
+		this.pathSeperator = /^win/.test(process.platform) ? "\\" : "/";
 		this.phpcbfExecutableFile = `phpcbf${extension}`;
 	}
 
