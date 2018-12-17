@@ -1,14 +1,11 @@
 "use strict";
 
 import * as spawn from "cross-spawn";
-import * as fs from "fs";
-import * as os from "os";
 import { PhpcbfConfiguration } from "./configuration";
 import { PhpcbfSettings } from "./settings";
 import { StandardsPathResolver } from "./resolvers/standards-path-resolver";
 import { ConsoleError } from "./console-error";
 import { window, TextDocument, Range, Position, TextEdit, ProviderResult } from "vscode";
-
 export class Phpcbf {
     public config!: PhpcbfSettings;
 
@@ -33,13 +30,17 @@ export class Phpcbf {
      * @param fileName
      * @param standard 
      */
-    private getArgs(fileName: string, standard: string) {
+    private getArgs(document: TextDocument, standard: string) {
+        // Process linting paths.
+		let filePath = document.fileName;
+
         let args = [];
-        args.push("-lq");
-        args.push(fileName);
+        args.push("-q");
         if (standard !== '') {
             args.push("--standard=" + standard);
         }
+        args.push(`--stdin-path=${filePath}`);
+        args.push("-");
         return args;
     }
 
@@ -64,31 +65,20 @@ export class Phpcbf {
             console.time("phpcbf");
         }
 
-        // grab original text and create a temp file
-        let originalText = document.getText();
-
-        let fileName =
-            os.tmpdir() +
-            "/temp-" +
-            Math.random()
-                .toString(36)
-                .replace(/[^a-z]+/g, "")
-                .substr(0, 10) +
-            ".php";
-
-        fs.writeFileSync(fileName, originalText);
-
         // setup and spawn phpcbf process
         const standard = await this.resolveStandard(document);
 
-        const lintArgs = this.getArgs(fileName, standard);
+        const lintArgs = this.getArgs(document, standard);
+
+        let fileText = document.getText();
 
         const options = {
             cwd: this.config.workspaceRoot !== null ? this.config.workspaceRoot : undefined,
             env: process.env,
             encoding: "utf8",
             timeout: this.config.timeout,
-            tty: true
+            tty: true,
+            input: fileText
         };
 
         if (this.config.debug) {
@@ -98,11 +88,8 @@ export class Phpcbf {
 
         const phpcbf = spawn.sync(this.config.executablePath, lintArgs, options);
         const stdout = phpcbf.stdout.toString().trim();
-        const stderr = phpcbf.stderr.toString().trim();
 
-        // grab the fixed file and cleanup
-        let fixed = fs.readFileSync(fileName, "utf-8");
-        fs.unlink(fileName, () => { });
+        let fixed = stdout + "\n";
 
         let errors: { [key: number]: string } = {
             3: "PHPCBF: A general script execution error occurred.",
@@ -114,6 +101,7 @@ export class Phpcbf {
 
         let error: string = '';
         let result: string = '';
+        let message: string = 'No fixable errors were found.';
 
         /**
         * phpcbf exit codes:
@@ -139,15 +127,30 @@ export class Phpcbf {
             }
             case 0: {
                 if (this.config.debug) {
-                    window.showInformationMessage(stdout);
+                    window.showInformationMessage(message);
                 }
-                result = '';
                 break;
             }
-            case 1:
-            case 2: {
-                if (fixed.length > 0 && fixed !== originalText) {
+            case 1: {
+                if (fixed.length > 0 && fixed !== fileText) {
                     result = fixed;
+                    message = 'All fixable errors were fixed correctly.';
+                }
+
+                if (this.config.debug) {
+                    window.showInformationMessage(message);
+                }
+
+                break;
+            }
+            case 2: {
+                if (fixed.length > 0 && fixed !== fileText) {
+                    result = fixed;
+                    message = 'PHPCBF failed to fix some of the fixable errors.';
+                }
+
+                if (this.config.debug) {
+                    window.showInformationMessage(message);
                 }
                 break;
             }
@@ -156,11 +159,7 @@ export class Phpcbf {
         }
 
         if (this.config.debug) {
-            if (stderr !== '') {
-                console.log(stderr);
-            } else {
-                console.log(stdout);
-            }
+            console.log(phpcbf);
             console.timeEnd("phpcbf");
             console.log("----- END PHPCBF -----");
         }

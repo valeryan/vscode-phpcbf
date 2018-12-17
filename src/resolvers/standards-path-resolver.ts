@@ -17,16 +17,16 @@ export class StandardsPathResolver extends PhpcbfPathResolverBase {
         }
 
         let resolvedPath: string | null = null;
-        let workspaceRoot = this.config.workspaceRoot + this.pathSeperator;
+        let workspaceRoot = this.config.workspaceRoot + this.pathSeparator;
         let localPath = this.document.uri.fsPath.replace(workspaceRoot, '');
-        let paths = localPath.split(this.pathSeperator)
+        let paths = localPath.split(this.pathSeparator)
             .filter(path => path.includes('.php') !== true);
 
         let searchPaths = [];
 
         // create search paths based on file location
         for (let i = 0, len = paths.length; i < len; i++) {
-            searchPaths.push(workspaceRoot + paths.join(this.pathSeperator) + this.pathSeperator);
+            searchPaths.push(workspaceRoot + paths.join(this.pathSeparator) + this.pathSeparator);
             paths.pop();
         }
         searchPaths.push(workspaceRoot);
