@@ -1,4 +1,6 @@
 # Change Log
+## 1.1.4
+- Updated dependencies for security patches
 ## 1.1.3
 - Reworked input from file to stdin to allow exclude-patterns to work.
 ## 1.1.2
