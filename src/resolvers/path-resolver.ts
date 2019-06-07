@@ -4,25 +4,30 @@
  * ------------------------------------------------------------------------------------------ */
 "use strict";
 
-import { PhpcbfPathResolverBase } from './path-resolver-base';
+import { PathResolverBase } from './path-resolver-base';
 import { ComposerPhpcbfPathResolver } from './composer-path-resolver';
-import { GlobalPhpcbfPathResolver } from './global-path-resolver';
+import { GlobalPathResolver } from './global-path-resolver';
 
-export interface PhpcbfPathResolverOptions {
+export interface PathResolverOptions {
 	workspaceRoot: string | null;
-	composerJsonPath: string;
+    composerJsonPath: string;
 }
 
-export class PhpcbfPathResolver extends PhpcbfPathResolverBase {
+export class PathResolver extends PathResolverBase {
+    protected executableFile: string;
 
-	private resolvers: PhpcbfPathResolverBase[] = [];
+	private resolvers: PathResolverBase[] = [];
 
-	constructor(options: PhpcbfPathResolverOptions) {
-		super();
+	constructor(options: PathResolverOptions, executable: string) {
+        super();
+        this.executableFile = executable + this.extension;
 		if (options.workspaceRoot !== null) {
-			this.resolvers.push(new ComposerPhpcbfPathResolver(options.workspaceRoot, options.composerJsonPath));
+			this.resolvers.push(new ComposerPhpcbfPathResolver(
+                this.executableFile,
+                options.workspaceRoot,
+                options.composerJsonPath));
 		}
-		this.resolvers.push(new GlobalPhpcbfPathResolver());
+		this.resolvers.push(new GlobalPathResolver(this.executableFile));
 	}
 
 	async resolve(): Promise<string> {

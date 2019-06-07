@@ -1,13 +1,18 @@
 "use strict";
 
-export interface PhpcbfSettings {
+export interface Settings {
     enable: boolean;
     workspaceRoot: string;
-    executablePath: string;
+    executablePathCBF: string;
+    executablePathCS: string;
     composerJsonPath: string;
     standard: string | null;
     autoConfigSearch: boolean;
     allowedAutoRulesets: string[];
     debug: boolean;
     timeout: number;
+    snifferEnable: boolean;
+    snifferMode: string;
+    snifferTypeDelay: number;
+    snifferShowSources: boolean;
 }

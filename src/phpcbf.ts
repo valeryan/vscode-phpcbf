@@ -1,34 +1,34 @@
 "use strict";
 
 import * as spawn from "cross-spawn";
-import { PhpcbfConfiguration } from "./configuration";
-import { PhpcbfSettings } from "./settings";
+import { Configuration } from "./configuration";
+import { Settings } from "./settings";
 import { StandardsPathResolver } from "./resolvers/standards-path-resolver";
 import { ConsoleError } from "./console-error";
-import { window, TextDocument, Range, Position, TextEdit, ProviderResult } from "vscode";
+import { window, TextDocument, Range, Position, TextEdit, ProviderResult, Disposable, workspace, ConfigurationChangeEvent } from "vscode";
 export class Phpcbf {
-    public config!: PhpcbfSettings;
+    public config!: Settings;
 
+    constructor(subscriptions: Disposable[], config: Settings) {
+        this.config = config;
+        workspace.onDidChangeConfiguration(this.loadSettings, this, subscriptions);
+    }
     /**
      * Load Configuration from editor
      */
-    public async loadSettings() {
-        let configuration = new PhpcbfConfiguration();
-        let config = await configuration.load();
-
-        if (config === null) {
-            throw new Error('Unable to validate configuration.');
+    public async loadSettings(event: ConfigurationChangeEvent) {
+        if (!event.affectsConfiguration('phpcbf') && !event.affectsConfiguration('editor.formatOnSaveTimeout')) {
+            return;
         }
-
+        let configuration = new Configuration();
+        let config = await configuration.load();
         this.config = config;
-
-        return config;
     }
 
     /**
      * Build the arguments needed to execute phpcbf
      * @param fileName
-     * @param standard 
+     * @param standard
      */
     private getArgs(document: TextDocument, standard: string) {
         // Process linting paths.
@@ -45,20 +45,8 @@ export class Phpcbf {
     }
 
     /**
-     * Get the relevant standard.
-     * @param document 
-     */
-    private async resolveStandard(document: TextDocument) {
-        let standardsPathResolver = new StandardsPathResolver(document, this.config);
-        const configured = this.config.standard !== null ? this.config.standard : '';
-        const resolved = await standardsPathResolver.resolve();
-        // just return the value of config.standard if nothings was resolved.
-        return resolved === '' ?  configured : resolved; 
-    }
-
-    /**
      * run the phpcbf process
-     * @param document 
+     * @param document
      */
     private async format(document: TextDocument) {
         if (this.config.debug) {
@@ -66,7 +54,7 @@ export class Phpcbf {
         }
 
         // setup and spawn phpcbf process
-        const standard = await this.resolveStandard(document);
+        const standard = await new StandardsPathResolver(document, this.config).resolve();
 
         const lintArgs = this.getArgs(document, standard);
 
@@ -83,10 +71,10 @@ export class Phpcbf {
 
         if (this.config.debug) {
             console.log("----- PHPCBF -----");
-            console.log("PHPCBF args: " + this.config.executablePath + " " + lintArgs.join(" "));
+            console.log("PHPCBF args: " + this.config.executablePathCBF + " " + lintArgs.join(" "));
         }
 
-        const phpcbf = spawn.sync(this.config.executablePath, lintArgs, options);
+        const phpcbf = spawn.sync(this.config.executablePathCBF, lintArgs, options);
         const stdout = phpcbf.stdout.toString().trim();
 
         let fixed = stdout + "\n";
@@ -172,8 +160,8 @@ export class Phpcbf {
     }
 
     /**
-     * Setup wrapper for format for extension
-     * @param document 
+     * Setup wrapper to format for extension
+     * @param document
      */
     public registerDocumentProvider(document: TextDocument): ProviderResult<TextEdit[]> {
         return new Promise((resolve, reject) => {

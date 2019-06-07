@@ -7,24 +7,28 @@
 import * as path from 'path';
 import * as fs from 'fs';
 
-import { PhpcbfPathResolverBase } from './path-resolver-base';
+import { PathResolverBase } from './path-resolver-base';
 
-export class ComposerPhpcbfPathResolver extends PhpcbfPathResolverBase {
+export class ComposerPhpcbfPathResolver extends PathResolverBase {
 
 	protected readonly _workspaceRoot: string;
 	protected readonly _workingPath: string;
 
 	protected _composerJsonPath!: string;
-	protected _composerLockPath!: string;
+    protected _composerLockPath!: string;
+
+    protected _executableFile: string;
 
 	/**
 	 * Class constructor.
 	 *
+	 * @param executableFile The executable file.
 	 * @param workspaceRoot The workspace path.
 	 * @param composerJsonPath The path to composer.json.
 	 */
-	constructor(workspaceRoot: string, workingPath: string = '') {
-		super();
+	constructor(executableFile: string, workspaceRoot: string, workingPath: string = '') {
+        super();
+        this._executableFile = executableFile;
 		this._workspaceRoot = workspaceRoot;
 		this._workingPath = path.isAbsolute(workingPath)
 			? workingPath
@@ -109,7 +113,7 @@ export class ComposerPhpcbfPathResolver extends PhpcbfPathResolverBase {
 	 */
 	getVendorPath(): string {
 		let basePath = path.dirname(this.composerJsonPath);
-		let vendorPath = path.join(basePath, "vendor", "bin", this.phpcbfExecutableFile);
+		let vendorPath = path.join(basePath, "vendor", "bin", this._executableFile);
 
 		// Safely load composer.json
 		let config = null;
@@ -122,12 +126,12 @@ export class ComposerPhpcbfPathResolver extends PhpcbfPathResolverBase {
 
 		// Check vendor-bin configuration
 		if (config["config"] && config["config"]["vendor-dir"]) {
-			vendorPath = path.join(basePath, config["config"]["vendor-dir"], "bin", this.phpcbfExecutableFile);
+			vendorPath = path.join(basePath, config["config"]["vendor-dir"], "bin", this._executableFile);
 		}
 
 		// Check bin-bin configuration
 		if (config["config"] && config["config"]["bin-dir"]) {
-			vendorPath = path.join(basePath, config["config"]["bin-dir"], this.phpcbfExecutableFile);
+			vendorPath = path.join(basePath, config["config"]["bin-dir"], this._executableFile);
 		}
 
 		return vendorPath;

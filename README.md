@@ -1,14 +1,10 @@
-# PHP Code Beautifier and Fixer for VS Code
+# PhpCS & PhpCBF for VS Code
 
 [![Current Version](https://vsmarketplacebadge.apphb.com/version/ValeryanM.vscode-phpcbf.svg)](https://marketplace.visualstudio.com/items?itemName=ValeryanM.vscode-phpcbf)
 [![Install Count](https://vsmarketplacebadge.apphb.com/installs/ValeryanM.vscode-phpcbf.svg)](https://marketplace.visualstudio.com/items?itemName=ValeryanM.vscode-phpcbf)
 [![Open Issues](https://vsmarketplacebadge.apphb.com/rating/ValeryanM.vscode-phpcbf.svg)](https://marketplace.visualstudio.com/items?itemName=ValeryanM.vscode-phpcbf)
 
-# Special Notice 
-I am unsure what I did but somehow the publisher account for this extension was deleted. I had to recreate the publisher and republish this extension. Although it is under the same namespace VSCode will not prompt you to update. If you have version 1.1.0 or less it will need to be deleted and reinstalled. 
-#
-
-This linter plugin for [Visual Studio Code](https://code.visualstudio.com/) provides an interface to [phpcbf](http://pear.php.net/package/PHP_CodeSniffer/). It will be used with files that have the “PHP” language mode. This extension is designed to compliment the [phpcs](https://github.com/ikappas/vscode-phpcs/) extension and uses the same auto configuration search mechanism to apply rulesets to files within a workspace.
+This linter plugin for [Visual Studio Code](https://code.visualstudio.com/) provides an interface to [phpcs & phpcbf](http://pear.php.net/package/PHP_CodeSniffer/). It will be used with files that have the “PHP” language mode. This extension is designed to use an auto configuration search mechanism to apply rulesets to files within a workspace.
 
 ## Installation
 
@@ -26,17 +22,17 @@ or if format on save is enabled save document
 
 ## Linter Installation
 
-Before using this plugin, you must ensure that `phpcbf` is installed on your system. The preferred method is using [composer](https://getcomposer.org/) for both system-wide and project-wide installations.
+Before using this plugin, you must ensure that `phpcs` is installed on your system. The preferred method is using [composer](https://getcomposer.org/) for both system-wide and project-wide installations.
 
-Once phpcbf is installed, you can proceed to install the vscode-phpcbf plugin if it is not yet installed.
+Once phpcs is installed, you can proceed to install the PhpCS & PhpCBF for VS Code extension if it is not yet installed.
 
-> **NOTE:** This plugin can detect whether your project has been set up to use phpcbf via composer and use the project specific `phpcbf` over the system-wide installation of `phpcbf` automatically. This feature requires that both composer.json and composer.lock file exist in your workspace root or the `phpcbf.composerJsonPath` in order to check for the composer dependency. If you wish to bypass this feature you can set the `phpcbf.executablePath` configuration setting.
+> **NOTE:** This plugin can detect whether your project has been set up to use phpcbf via composer and use the project specific `phpcs & phpcbf` over the system-wide installation of `phpcs & phpcbf` automatically. This feature requires that both composer.json and composer.lock file exist in your workspace root or the `composerJsonPath` in order to check for the composer dependency. If you wish to bypass this feature you can set the `executablePath` configuration setting.
 
 > **NOTE:** `phpcbf` is installed along with `phpcs`.
 
 ### System-wide Installation
 
-The `phpcbf` linter can be installed globally using the Composer Dependency Manager for PHP.
+The `phpcs` linter can be installed globally using the Composer Dependency Manager for PHP.
 
 1. Install [composer](https://getcomposer.org/doc/00-intro.md).
 1. Require `phpcs` package by typing the following in a terminal:

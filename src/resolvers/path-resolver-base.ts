@@ -4,14 +4,13 @@
  * ------------------------------------------------------------------------------------------ */
 "use strict";
 
-export abstract class PhpcbfPathResolverBase {
-	protected phpcbfExecutableFile: string;
+export abstract class PathResolverBase {
+    protected extension: string;
 	protected pathSeparator: string;
 
 	constructor() {
-		let extension = /^win/.test(process.platform) ? ".bat" : "";
+		this.extension = /^win/.test(process.platform) ? ".bat" : "";
 		this.pathSeparator = /^win/.test(process.platform) ? "\\" : "/";
-		this.phpcbfExecutableFile = `phpcbf${extension}`;
 	}
 
 	abstract async resolve(): Promise<string>;

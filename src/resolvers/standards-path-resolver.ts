@@ -2,18 +2,19 @@
 
 import * as fs from 'fs';
 
-import { PhpcbfPathResolverBase } from './path-resolver-base';
+import { PathResolverBase } from './path-resolver-base';
 import { TextDocument } from 'vscode';
-import { PhpcbfSettings } from '../settings';
+import { Settings } from '../settings';
 
-export class StandardsPathResolver extends PhpcbfPathResolverBase {
+export class StandardsPathResolver extends PathResolverBase {
 
-    constructor(private document: TextDocument, private config: PhpcbfSettings) {
+    constructor(private document: TextDocument, private config: Settings) {
         super();
     }
     async resolve(): Promise<string> {
+        let configured = this.config.standard !== null ? this.config.standard : '';
         if (this.config.autoConfigSearch === false) {
-            return '';
+            return configured;
         }
 
         let resolvedPath: string | null = null;
@@ -55,6 +56,6 @@ export class StandardsPathResolver extends PhpcbfPathResolverBase {
             }
         }
 
-        return resolvedPath === null ? '' : resolvedPath;
+        return resolvedPath === null ? configured : resolvedPath;
     }
 }

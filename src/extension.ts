@@ -1,27 +1,24 @@
 'use strict';
 
 import { Phpcbf } from './phpcbf';
-import { commands, ExtensionContext, workspace, languages } from 'vscode';
+import { commands, ExtensionContext, languages } from 'vscode';
+import { Phpcs } from './phpcs';
+import { Configuration } from './configuration';
 
 /**
  * Activate Extension
- * @param context 
+ * @param context
  */
 export async function activate(context: ExtensionContext) {
-    let phpcbf = new Phpcbf();
-
-    let config = await phpcbf.loadSettings();
+    let configuration = new Configuration();
+    let config = await configuration.load();
 
     if (config.enable === false) {
         // just exit
         return;
     }
 
-    context.subscriptions.push(
-        workspace.onDidChangeConfiguration(async () => {
-            config = await phpcbf.loadSettings();
-        })
-    );
+    let phpcbf = new Phpcbf(context.subscriptions, config);
 
     // register format from command pallet
     context.subscriptions.push(
@@ -40,4 +37,10 @@ export async function activate(context: ExtensionContext) {
             }
         })
     );
+
+    // register a document validator
+    if (config.snifferEnable === true) {
+        context.subscriptions.push(new Phpcs(context.subscriptions, config));
+    }
+
 }
