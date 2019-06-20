@@ -1,11 +1,11 @@
-# PHP Code Beautifier and Fixer for VS Code
+# PHP Code Beautifier and Fixer for VS Code (Deprecated)
 
 [![Current Version](https://vsmarketplacebadge.apphb.com/version/ValeryanM.vscode-phpcbf.svg)](https://marketplace.visualstudio.com/items?itemName=ValeryanM.vscode-phpcbf)
 [![Install Count](https://vsmarketplacebadge.apphb.com/installs/ValeryanM.vscode-phpcbf.svg)](https://marketplace.visualstudio.com/items?itemName=ValeryanM.vscode-phpcbf)
 [![Open Issues](https://vsmarketplacebadge.apphb.com/rating/ValeryanM.vscode-phpcbf.svg)](https://marketplace.visualstudio.com/items?itemName=ValeryanM.vscode-phpcbf)
 
 # Special Notice 
-I am unsure what I did but somehow the publisher account for this extension was deleted. I had to recreate the publisher and republish this extension. Although it is under the same namespace VSCode will not prompt you to update. If you have version 1.1.0 or less it will need to be deleted and reinstalled. 
+Note: This extension has been deprecated in favor of the [PHP Sniffer & Beautifier for VS Code](https://github.com/valeryan/vscode-phpsab). It provides the same support for phpcbf but I have added the phpcs functionality for a more complete package. 
 #
 
 This linter plugin for [Visual Studio Code](https://code.visualstudio.com/) provides an interface to [phpcbf](http://pear.php.net/package/PHP_CodeSniffer/). It will be used with files that have the “PHP” language mode. This extension is designed to compliment the [phpcs](https://github.com/ikappas/vscode-phpcs/) extension and uses the same auto configuration search mechanism to apply rulesets to files within a workspace.
