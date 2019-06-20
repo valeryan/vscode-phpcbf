@@ -1,4 +1,6 @@
 # Change Log
+## 1.1.5
+- Adding deprecated message for the new combined phpcbf and phpcs extension.
 ## 1.1.4
 - Updated dependencies for security patches
 ## 1.1.3

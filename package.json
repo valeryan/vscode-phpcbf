@@ -2,9 +2,9 @@
     "name": "vscode-phpcbf",
     "displayName": "phpcbf",
     "description": "PHP Code Beautifier & Fixer for Visual StudioCode",
-    "version": "1.1.4",
+    "version": "1.1.5",
     "icon": "phpcbf.png",
-    "publisher": "ValeryanM",
+    "publisher": "valeryanm",
     "homepage": "https://github.com/valeryan/vscode-phpcbf",
     "license": "MIT",
     "repository": {
